@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- custom css-->
     <link rel="stylesheet" href="style.css">
+    <title>SteamBis - Connexion & Enregistrement</title>
 </head>
 <body>
     <div class="carre">
-        <img src="image/logo_steam.svg" alt="">
+        <img src="image/logo_steam.svg" alt="Logo Steam">
     </div>
     <div class="form-container">
         <h2>Créer un compte</h2>
@@ -44,69 +43,57 @@
     </div>
 
     <script>
-        const apiBaseUrl = 'https://steambis.com'; 
-
         // Gestion de la création d'un compte
-        document.getElementById('registerForm').addEventListener('submit', async function(event) {
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const username = document.getElementById('new-username').value;
             const password = document.getElementById('new-password').value;
             const messageDiv = document.getElementById('registerMessage');
 
-            try {
-                const response = await fetch(`${apiBaseUrl}/register`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
+            // Sauvegarder les informations dans le Local Storage
+            localStorage.setItem('username', username);
+            localStorage.setItem('password', password);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    messageDiv.style.color = 'green';
-                    messageDiv.textContent = `Compte créé avec succès : ${data.message}`;
-                } else {
-                    const errorData = await response.json();
-                    messageDiv.style.color = 'red';
-                    messageDiv.textContent = `Erreur : ${errorData.message || 'Impossible de créer le compte'}`;
-                }
-            } catch (error) {
-                messageDiv.style.color = 'red';
-                messageDiv.textContent = 'Une erreur est survenue. Veuillez réessayer.';
-            }
+            // Affichage du message de succès
+            messageDiv.style.color = 'blue';
+            messageDiv.textContent = "Compte créé avec succès. Vous pouvez maintenant vous identifier.";
         });
 
         // Gestion de la connexion
-        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('loginMessage');
 
-            try {
-                const response = await fetch(`${apiBaseUrl}/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
+            // Récupérer les informations depuis le Local Storage
+            const storedUsername = localStorage.getItem('username');
+            const storedPassword = localStorage.getItem('password');
 
-                if (response.ok) {
-                    const data = await response.json();
-                    messageDiv.style.color = 'green';
-                    messageDiv.textContent = `Connexion réussie : ${data.message}`;
-                } else {
-                    const errorData = await response.json();
-                    messageDiv.style.color = 'red';
-                    messageDiv.textContent = `Erreur : ${errorData.message || 'Identifiants incorrects'}`;
-                }
-            } catch (error) {
+            // Vérifier les identifiants
+            if (username === storedUsername && password === storedPassword) {
                 messageDiv.style.color = 'red';
-                messageDiv.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+                messageDiv.textContent = "Connexion réussie ! j'ai ton ID et ton password couillon";
+            } else {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = "Erreur : Identifiants incorrects.";
+            }
+        });
+
+        // Pré-remplir les champs si les données existent dans Local Storage
+        window.addEventListener('load', () => {
+            const savedUsername = localStorage.getItem('username');
+            const savedPassword = localStorage.getItem('password');
+
+            if (savedUsername && savedPassword) {
+                document.getElementById('username').value = savedUsername;
+                document.getElementById('password').value = savedPassword;
+
+                const loginMessage = document.getElementById('loginMessage');
+                loginMessage.textContent = `Nom d'utilisateur pré-rempli : ${savedUsername}`;
+                loginMessage.style.color = 'blue';
             }
         });
     </script>
